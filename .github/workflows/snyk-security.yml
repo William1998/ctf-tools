@@ -34,14 +34,14 @@ jobs:
       # -----------------------------------------------------------
       # 3. SETUP SNYK & RUN SCANS
       # -----------------------------------------------------------
-
-      - name: Check Snyk Org Access
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: snyk config set endpoint=https://api.au.snyk.io
       
       - name: Setup Snyk CLI
         uses: snyk/actions/setup@master
+      
+      - name: Set API Endpoint
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: snyk config set endpoint=https://api.au.snyk.io
 
       # Snyk Open Source (SCA) - Relies on the 'npm install' step above
       - name: Snyk Open Source (SCA)

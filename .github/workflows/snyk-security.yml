@@ -38,7 +38,7 @@ jobs:
       - name: Check Snyk Org Access
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: snyk orgs
+        run: snyk config set endpoint=https://api.au.snyk.io
       
       - name: Setup Snyk CLI
         uses: snyk/actions/setup@master

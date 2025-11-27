@@ -1,0 +1,64 @@
+name: Snyk Security Scan
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+
+jobs:
+  snyk-security:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # -----------------------------------------------------------
+      # 2. SETUP ENVIRONMENT & INSTALL DEPENDENCIES (Added Request)
+      # -----------------------------------------------------------
+      # Example: Node.js Setup.
+      # If using Python, use 'actions/setup-python' and 'pip install'.
+      # If using Java, use 'actions/setup-java' and 'mvn install'.
+      
+      # - name: Setup Node.js
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: '18' # Adjust version as needed
+          
+      # - name: Install Project Dependencies
+      #   run: npm install
+        # For Python: run: pip install -r requirements.txt
+        # For Java:   run: mvn install -DskipTests
+
+      # -----------------------------------------------------------
+      # 3. SETUP SNYK & RUN SCANS
+      # -----------------------------------------------------------
+      
+      - name: Setup Snyk CLI
+        uses: snyk/actions/setup@master
+
+      # Snyk Open Source (SCA) - Relies on the 'npm install' step above
+      - name: Snyk Open Source (SCA)
+        run: snyk test --severity-threshold=high
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        continue-on-error: true 
+
+      # Snyk Code (SAST)
+      - name: Snyk Code (SAST)
+        run: snyk code test --severity-threshold=high
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        continue-on-error: true
+
+      # # Build Docker Image (Required for Container Scanning)
+      # - name: Build Docker Image
+      #   run: docker build . -t my-app:latest
+
+      # # Snyk Container
+      # - name: Snyk Container
+      #   run: snyk container test my-app:latest --file=Dockerfile --severity-threshold=high
+      #   env:
+      #     SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      #   continue-on-error: true
